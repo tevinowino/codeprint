@@ -1,7 +1,5 @@
-import { listProjects } from "@/lib/projects";
-import { DashboardView } from "@/components/dashboard/dashboard-view";
+import { DashboardScreen } from "@/components/dashboard/dashboard-screen";
 
-export default async function DashboardPage() {
-  const projects = await listProjects();
-  return <DashboardView projects={projects} />;
+export default function DashboardPage() {
+  return <DashboardScreen />;
 }

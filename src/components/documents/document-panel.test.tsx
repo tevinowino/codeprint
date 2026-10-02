@@ -79,7 +79,7 @@ describe("DocumentPanel", () => {
 
     await user.click(screen.getByRole("tab", { name: "schema.sql" }));
 
-    expect(onActiveTitleChange).toHaveBeenCalledWith("schema.sql", expect.anything());
+    expect(onActiveTitleChange).toHaveBeenCalledWith("schema.sql");
   });
 
   it("renders a non-markdown document as raw source instead of interpreting it as markdown", () => {

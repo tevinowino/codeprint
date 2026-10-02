@@ -15,8 +15,8 @@ export function DashboardView({ projects }: { projects: Project[] }) {
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-lg font-semibold text-zinc-100">Notebooks</h1>
-          <p className="text-sm text-zinc-500">
+          <h1 className="text-lg font-semibold text-foreground">Notebooks</h1>
+          <p className="text-sm text-muted-foreground">
             Every project you&apos;re scoping, in one place.
           </p>
         </div>

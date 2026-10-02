@@ -7,8 +7,8 @@ export function DocumentBody({ title, content }: { title: string; content: strin
   }
 
   return (
-    <pre className="overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900/70 p-4">
-      <code className="font-mono text-xs leading-relaxed text-zinc-300">{content}</code>
+    <pre className="overflow-x-auto rounded-lg border border-border bg-muted p-4">
+      <code className="font-mono text-xs leading-relaxed text-foreground/90">{content}</code>
     </pre>
   );
 }

@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { CopyIcon } from "lucide-react";
-import { toast } from "sonner";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 import type { ProjectDocument } from "@/domain/types";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DocumentBody } from "@/components/documents/document-body";
+import { DocumentTabBar } from "@/components/documents/document-tab-bar";
 import { formatRelativeTime } from "@/lib/format";
 
 export function DocumentPanel({
@@ -24,7 +25,7 @@ export function DocumentPanel({
   if (documents.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-muted-foreground">
           No documents yet — they&apos;ll appear here as the interview progresses.
         </p>
       </div>
@@ -39,22 +40,20 @@ export function DocumentPanel({
   async function handleCopy() {
     await navigator.clipboard.writeText(activeDocument.content);
     setCopied(true);
-    toast.success(`Copied ${activeDocument.title}`);
+    gooeyToast.success(`Copied ${activeDocument.title}`);
     setTimeout(() => setCopied(false), 1500);
   }
 
   return (
     <Tabs value={value} onValueChange={onActiveTitleChange} className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center justify-between gap-2 border-b border-zinc-800 px-3 py-2">
-        <TabsList variant="line" className="overflow-x-auto">
-          {documents.map((doc) => (
-            <TabsTrigger key={doc.title} value={doc.title} className="font-mono">
-              {doc.title}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
+        <DocumentTabBar
+          titles={documents.map((doc) => doc.title)}
+          active={value}
+          onChange={onActiveTitleChange}
+        />
         <div className="flex shrink-0 items-center gap-2">
-          <Badge variant="outline" className="border-zinc-700 text-zinc-500">
+          <Badge variant="outline" className="border-border text-muted-foreground">
             v{activeDocument.version}
           </Badge>
           <Button variant="ghost" size="icon-sm" onClick={handleCopy}>
@@ -66,7 +65,7 @@ export function DocumentPanel({
 
       {documents.map((doc) => (
         <TabsContent key={doc.title} value={doc.title} className="min-h-0 flex-1 overflow-y-auto p-5">
-          <p className="mb-4 text-xs text-zinc-600">
+          <p className="mb-4 text-xs text-muted-foreground">
             Updated {formatRelativeTime(doc.updatedAt)}
           </p>
           <DocumentBody title={doc.title} content={doc.content} />

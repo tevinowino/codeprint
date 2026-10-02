@@ -33,8 +33,8 @@ export function ScopingFormCard({
   const activeSelection = isAnswered ? (part.selected ?? []) : pending;
 
   return (
-    <div className="flex max-w-md flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-900/55 p-4">
-      <p className="text-sm font-medium text-zinc-200">{part.question}</p>
+    <div className="flex max-w-md flex-col gap-3 rounded-xl border-2 border-zinc-900 bg-card p-4 dark:border-zinc-100">
+      <p className="text-sm font-medium text-foreground">{part.question}</p>
       <div className="flex flex-wrap gap-2">
         {part.options.map((option) => {
           const isSelected = activeSelection.includes(option);
@@ -47,8 +47,8 @@ export function ScopingFormCard({
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                 isSelected
-                  ? "border-zinc-100 bg-zinc-100 text-zinc-950"
-                  : "border-zinc-700 text-zinc-300 hover:border-zinc-500",
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border text-muted-foreground hover:border-foreground/40",
                 isAnswered && !isSelected && "opacity-40",
                 isAnswered && "cursor-default"
               )}

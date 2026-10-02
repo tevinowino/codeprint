@@ -15,9 +15,9 @@ export function StatusStepper({ status }: { status: ProjectStatus }) {
             <span
               className={cn(
                 "text-xs font-medium",
-                isCurrent && "text-zinc-100",
-                isComplete && "text-zinc-500",
-                !isCurrent && !isComplete && "text-zinc-700"
+                isCurrent && "text-foreground",
+                isComplete && "text-muted-foreground",
+                !isCurrent && !isComplete && "text-muted-foreground/50"
               )}
             >
               {PROJECT_STATUS_META[step].label}
@@ -26,7 +26,7 @@ export function StatusStepper({ status }: { status: ProjectStatus }) {
               <span
                 className={cn(
                   "h-px w-6 shrink-0",
-                  isComplete ? "bg-zinc-600" : "bg-zinc-800"
+                  isComplete ? "bg-foreground/40" : "bg-border"
                 )}
               />
             )}

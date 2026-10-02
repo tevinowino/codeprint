@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // Mirrors the Convex schema in the project blueprint. This module is the seam:
 // swapping the mock data layer for real Convex queries later should require no
 // changes to these shapes, only to lib/projects.ts.
@@ -41,6 +43,8 @@ export interface ProjectMessage {
   projectId: string;
   role: MessageRole;
   parts: MessagePart[];
+  /** True while the assistant is still writing this message. */
+  isStreaming?: boolean;
   createdAt: number;
 }
 
@@ -50,5 +54,50 @@ export interface ProjectDocument {
   title: string; // e.g. "architecture.md"
   content: string;
   version: number;
+  updatedAt: number;
+}
+
+export const TrackerItemStatusSchema = z.enum([
+  "todo",
+  "in_progress",
+  "almost_completed",
+  "completed",
+  "on_hold",
+]);
+
+export type TrackerItemStatus = z.infer<typeof TrackerItemStatusSchema>;
+
+export const TrackerItemSchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  title: z.string().min(1),
+  completed: z.boolean(),
+  status: TrackerItemStatusSchema.default("todo"),
+  createdAt: z.number(),
+});
+
+export interface TrackerItem {
+  id: string;
+  projectId: string;
+  title: string;
+  completed: boolean;
+  status?: TrackerItemStatus;
+  createdAt: number;
+}
+
+export function resolveTrackerStatus(
+  status?: TrackerItemStatus,
+  completed?: boolean
+): TrackerItemStatus {
+  if (status) return status;
+  if (completed) return "completed";
+  return "todo";
+}
+
+export interface NotebookNote {
+  id: string;
+  projectId: string;
+  content: string;
+  createdAt: number;
   updatedAt: number;
 }

@@ -49,19 +49,58 @@
 }
 
 /*
- * CODEPRINT is dark-mode-only for phase 1 (Vercel-inspired: zinc-950 canvas,
- * zinc-900 cards, zinc-800 hairline borders). :root and .dark share the same
- * values so the app renders correctly with or without JS toggling the class;
- * a light theme is not in scope until product design calls for one.
+ * CODEPRINT's identity: neutrals (zinc) plus one committed accent, lime,
+ * carried by primary buttons and status. Light is the default; dark mirrors
+ * the same structure on the existing zinc-950 base. Card borders are bold
+ * and black/white on purpose (see the `border-2 border-zinc-900
+ * dark:border-zinc-100` convention used on actual card components) — that's
+ * a deliberate per-component choice, not this ambient --border token, which
+ * stays a soft hairline for ordinary dividers (nav, tab rows, toolbars).
  */
 :root {
+  --background: oklch(0.967 0.001 286.375); /* zinc-100 — dimmer than pure white/zinc-50 */
+  --foreground: oklch(0.141 0.005 285.823); /* zinc-950 */
+  --card: oklch(0.985 0 0); /* zinc-50 — still a touch brighter than the page */
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(0.985 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.841 0.238 128.85); /* lime-400 */
+  --primary-foreground: oklch(0.141 0.005 285.823); /* black text on lime */
+  --secondary: oklch(0.21 0.006 285.885); /* zinc-900 — solid-black button option */
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.92 0.004 286.32); /* zinc-200 */
+  --muted-foreground: oklch(0.552 0.016 285.938); /* zinc-500 */
+  --accent: oklch(0.92 0.004 286.32);
+  --accent-foreground: oklch(0.141 0.005 285.823);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.871 0.006 286.286); /* zinc-300 hairline */
+  --input: oklch(0.871 0.006 286.286);
+  /* A quiet neutral ring, not the lime accent — lime is for actions/status, not chrome. */
+  --ring: oklch(0.705 0.015 286.067); /* zinc-400 */
+  --chart-1: oklch(0.841 0.238 128.85);
+  --chart-2: oklch(0.646 0.222 41.116);
+  --chart-3: oklch(0.6 0.118 184.704);
+  --chart-4: oklch(0.552 0.016 285.938);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 1rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.841 0.238 128.85);
+  --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-accent: oklch(0.92 0.004 286.32);
+  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-border: oklch(0.871 0.006 286.286);
+  --sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+.dark {
   --background: oklch(0.141 0.005 285.823); /* zinc-950 */
   --foreground: oklch(0.967 0.001 286.375); /* zinc-100 */
   --card: oklch(0.21 0.006 285.885); /* zinc-900 */
   --card-foreground: oklch(0.967 0.001 286.375);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.967 0.001 286.375);
-  --primary: oklch(0.967 0.001 286.375); /* zinc-100 — inverted "primary" button per Vercel style */
+  --primary: oklch(0.841 0.238 128.85); /* same lime-400 — one accent, both themes */
   --primary-foreground: oklch(0.141 0.005 285.823);
   --secondary: oklch(0.274 0.006 286.033); /* zinc-800 */
   --secondary-foreground: oklch(0.967 0.001 286.375);
@@ -70,57 +109,23 @@
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.967 0.001 286.375);
   --destructive: oklch(0.637 0.237 25.331);
-  --border: oklch(0.274 0.006 286.033); /* zinc-800 */
+  --border: oklch(0.274 0.006 286.033); /* zinc-800 hairline */
   --input: oklch(0.274 0.006 286.033);
-  --ring: oklch(0.442 0.017 285.786); /* zinc-600 */
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.646 0.222 41.116);
-  --chart-3: oklch(0.6 0.118 184.704);
-  --chart-4: oklch(0.552 0.016 285.938);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.141 0.005 285.823);
-  --sidebar-foreground: oklch(0.967 0.001 286.375);
-  --sidebar-primary: oklch(0.967 0.001 286.375);
-  --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-accent: oklch(0.21 0.006 285.885);
-  --sidebar-accent-foreground: oklch(0.967 0.001 286.375);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.442 0.017 285.786);
-}
-
-.dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.967 0.001 286.375);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.967 0.001 286.375);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.967 0.001 286.375);
-  --primary: oklch(0.967 0.001 286.375);
-  --primary-foreground: oklch(0.141 0.005 285.823);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.967 0.001 286.375);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.967 0.001 286.375);
-  --destructive: oklch(0.637 0.237 25.331);
-  --border: oklch(0.274 0.006 286.033);
-  --input: oklch(0.274 0.006 286.033);
-  --ring: oklch(0.442 0.017 285.786);
-  --chart-1: oklch(0.87 0 0);
+  /* A light, quiet outline rather than the lime accent — same reasoning as light mode. */
+  --ring: oklch(0.967 0.001 286.375); /* zinc-100 */
+  --chart-1: oklch(0.841 0.238 128.85);
   --chart-2: oklch(0.646 0.222 41.116);
   --chart-3: oklch(0.6 0.118 184.704);
   --chart-4: oklch(0.552 0.016 285.938);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.141 0.005 285.823);
   --sidebar-foreground: oklch(0.967 0.001 286.375);
-  --sidebar-primary: oklch(0.967 0.001 286.375);
+  --sidebar-primary: oklch(0.841 0.238 128.85);
   --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
   --sidebar-accent: oklch(0.21 0.006 285.885);
   --sidebar-accent-foreground: oklch(0.967 0.001 286.375);
   --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.442 0.017 285.786);
+  --sidebar-ring: oklch(0.967 0.001 286.375);
 }
 
 @layer base {
@@ -132,5 +137,33 @@
   }
   html {
     @apply font-sans;
+  }
+
+  ::selection {
+    background-color: oklch(0.841 0.238 128.85 / 35%); /* lime tint, not browser blue */
+    color: var(--foreground);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-color: var(--muted-foreground) transparent;
+    scrollbar-width: thin;
+  }
+
+  /* WebKit/Chromium */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--muted-foreground);
+    border: 2px solid var(--background);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--foreground);
   }
 }

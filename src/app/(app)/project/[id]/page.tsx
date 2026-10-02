@@ -1,6 +1,4 @@
-import { notFound } from "next/navigation";
-import { getDocuments, getMessages, getProject } from "@/lib/projects";
-import { Workspace } from "@/components/workspace/workspace";
+import { ProjectScreen } from "@/components/workspace/project-screen";
 
 export default async function ProjectPage({
   params,
@@ -8,15 +6,5 @@ export default async function ProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const project = await getProject(id);
-  if (!project) notFound();
-
-  const [messages, documents] = await Promise.all([
-    getMessages(id),
-    getDocuments(id),
-  ]);
-
-  return (
-    <Workspace project={project} initialMessages={messages} documents={documents} />
-  );
+  return <ProjectScreen projectId={id} />;
 }

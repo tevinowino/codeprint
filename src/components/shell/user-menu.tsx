@@ -1,48 +1,67 @@
 "use client";
 
+import { useClerk, useUser } from "@clerk/nextjs";
+import { cn } from "cn";
 import { LogOutIcon, SettingsIcon } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Static placeholder for the signed-in user; wired to real auth once
-// Convex Auth lands in a later phase.
-const MOCK_USER = { name: "Tevin", email: "tevinowino65@gmail.com" };
+export function UserMenu({ collapsed = false }: { collapsed?: boolean }) {
+  const { user } = useUser();
+  const { signOut, openUserProfile } = useClerk();
 
-export function UserMenu() {
-  const initial = MOCK_USER.name.charAt(0).toUpperCase();
+  const email = user?.primaryEmailAddress?.emailAddress ?? "";
+  const name = user?.firstName ?? user?.username ?? email.split("@")[0] ?? "Account";
+  const initial = (name.charAt(0) || "?").toUpperCase();
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-zinc-900">
+      <DropdownMenuTrigger
+        className={cn(
+          "flex min-w-0 items-center gap-2 rounded-md py-1.5 text-left hover:bg-sidebar-accent",
+          collapsed ? "justify-center px-1.5" : "flex-1 px-2"
+        )}
+      >
         <Avatar className="size-6">
-          <AvatarFallback className="bg-zinc-800 text-xs text-zinc-300">
+          {user?.imageUrl && <AvatarImage src={user.imageUrl} alt="" />}
+          <AvatarFallback className="bg-muted text-xs text-muted-foreground">
             {initial}
           </AvatarFallback>
         </Avatar>
-        <span className="min-w-0 flex-1 truncate text-sm text-zinc-300">
-          {MOCK_USER.name}
-        </span>
+        {!collapsed && (
+          <span className="min-w-0 flex-1 truncate text-sm text-sidebar-foreground">
+            {name}
+          </span>
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" side="top" className="w-56">
-        <DropdownMenuLabel className="truncate font-normal text-zinc-500">
-          {MOCK_USER.email}
-        </DropdownMenuLabel>
+      <DropdownMenuContent
+        align={collapsed ? "center" : "start"}
+        side={collapsed ? "right" : "top"}
+        className="w-56"
+      >
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="truncate font-normal text-muted-foreground">
+            {email}
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openUserProfile()}>
           <SettingsIcon />
-          Settings
+          Account settings
         </DropdownMenuItem>
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem variant="destructive" onClick={() => signOut({ redirectUrl: "/" })}>
           <LogOutIcon />
           Sign out
         </DropdownMenuItem>

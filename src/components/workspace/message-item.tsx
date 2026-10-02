@@ -22,10 +22,10 @@ export function MessageItem({
             <p
               key={index}
               className={cn(
-                "max-w-[85%] text-sm leading-relaxed",
+                "max-w-[85%] whitespace-pre-wrap text-sm leading-relaxed",
                 isUser
-                  ? "rounded-2xl rounded-tr-sm bg-zinc-800 px-3.5 py-2 text-zinc-100"
-                  : "text-zinc-300"
+                  ? "rounded-2xl rounded-tr-sm bg-muted px-3.5 py-2 text-foreground"
+                  : "text-foreground/90"
               )}
             >
               {part.text}

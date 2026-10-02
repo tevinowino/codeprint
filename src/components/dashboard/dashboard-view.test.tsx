@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DashboardView } from "@/components/dashboard/dashboard-view";
 import type { Project } from "@/domain/types";
+
+// The mounted-but-closed "new notebook" dialog reads the router and creates via Convex.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("@/lib/use-projects", () => ({ useCreateProject: () => vi.fn() }));
 
 describe("DashboardView", () => {
   it("shows the empty state and no project cards when there are no projects", () => {

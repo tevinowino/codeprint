@@ -10,17 +10,17 @@ export function DocumentPreviewCard({
   onOpen: (docTitle: string) => void;
 }) {
   return (
-    <div className="flex max-w-md items-start gap-3 rounded-xl border border-zinc-800 bg-zinc-900/55 p-4">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-zinc-800">
-        <FileTextIcon className="size-4 text-zinc-400" />
+    <div className="flex max-w-md items-start gap-3 rounded-xl border-2 border-zinc-900 bg-card p-4 dark:border-zinc-100">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+        <FileTextIcon className="size-4 text-muted-foreground" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="font-mono text-sm font-medium text-zinc-100">{part.docTitle}</p>
-        <p className="text-sm text-zinc-500">{part.summary}</p>
+        <p className="font-mono text-sm font-medium text-foreground">{part.docTitle}</p>
+        <p className="text-sm text-muted-foreground">{part.summary}</p>
         <Button
           variant="link"
           size="sm"
-          className="h-auto self-start px-0 text-zinc-300 hover:text-zinc-100"
+          className="h-auto self-start px-0 text-muted-foreground hover:text-foreground"
           onClick={() => onOpen(part.docTitle)}
         >
           Open document →

@@ -4,89 +4,135 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 import { cn } from "cn";
-import type { Project, ProjectDocument, ProjectMessage } from "@/domain/types";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import type { Project } from "@/domain/types";
+import { useNotebookNotes } from "@/lib/use-notebook-notes";
+import { useProjectChat } from "@/lib/use-project-chat";
+import { useTracker } from "@/lib/use-tracker";
 import { StatusStepper } from "@/components/workspace/status-stepper";
 import { ChatPanel } from "@/components/workspace/chat-panel";
+import {
+  WorkspaceTabBar,
+  type WorkspaceTabBarItem,
+} from "@/components/workspace/workspace-tab-bar";
 import { DocumentPanel } from "@/components/documents/document-panel";
+import { TrackerPanel } from "@/components/tracker/tracker-panel";
+import { NotesPanel } from "@/components/notes/notes-panel";
 
-export function Workspace({
-  project,
-  initialMessages,
-  documents,
-}: {
-  project: Project;
-  initialMessages: ProjectMessage[];
-  documents: ProjectDocument[];
-}) {
-  const [activeDocTitle, setActiveDocTitle] = useState<string | null>(
-    documents[0]?.title ?? null
-  );
-  const [mobileView, setMobileView] = useState<"chat" | "docs">("chat");
+type MobileView = "chat" | "documents" | "tracker" | "notes";
+type RightView = "documents" | "tracker" | "notes";
+
+const MOBILE_TABS: WorkspaceTabBarItem<MobileView>[] = [
+  { value: "chat", label: "Chat" },
+  { value: "documents", label: "Documents" },
+  { value: "tracker", label: "Tracker" },
+  { value: "notes", label: "Notes" },
+];
+
+const RIGHT_TABS: WorkspaceTabBarItem<RightView>[] = [
+  { value: "documents", label: "Documents" },
+  { value: "tracker", label: "Tracker" },
+  { value: "notes", label: "Notes" },
+];
+
+export function Workspace({ project }: { project: Project }) {
+  const chat = useProjectChat(project.id);
+  const tracker = useTracker(project.id);
+  const notes = useNotebookNotes(project.id);
+  const documents = useQuery(api.documents.listForProject, { projectId: project.id });
+  // null = "whichever document comes first"; DocumentPanel resolves it.
+  const [activeDocTitle, setActiveDocTitle] = useState<string | null>(null);
+  const [mobileView, setMobileView] = useState<MobileView>("chat");
+  const [rightView, setRightView] = useState<RightView>("documents");
 
   function handleOpenDocument(docTitle: string) {
     setActiveDocTitle(docTitle);
-    setMobileView("docs");
+    setMobileView("documents");
+    setRightView("documents");
   }
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex flex-col gap-2 border-b border-zinc-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <header className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
-            className="hidden text-zinc-600 hover:text-zinc-300 sm:block"
+            className="hidden text-muted-foreground hover:text-foreground sm:block"
           >
             <ArrowLeftIcon className="size-4" />
             <span className="sr-only">Back to notebooks</span>
           </Link>
-          <h1 className="truncate text-sm font-semibold text-zinc-100">{project.title}</h1>
+          <h1 className="truncate text-sm font-semibold text-foreground">{project.title}</h1>
         </div>
         <StatusStepper status={project.status} />
       </header>
 
-      {/* Mobile: Chat / Docs toggle */}
-      <div className="flex border-b border-zinc-800 md:hidden">
-        {(["chat", "docs"] as const).map((view) => (
-          <button
-            key={view}
-            onClick={() => setMobileView(view)}
-            className={cn(
-              "flex-1 border-b-2 py-2.5 text-sm font-medium capitalize transition-colors",
-              mobileView === view
-                ? "border-zinc-100 text-zinc-100"
-                : "border-transparent text-zinc-500"
-            )}
-          >
-            {view === "chat" ? "Chat" : "Documents"}
-          </button>
-        ))}
-      </div>
+      <WorkspaceTabBar
+        className="md:hidden"
+        items={MOBILE_TABS}
+        active={mobileView}
+        onChange={setMobileView}
+      />
 
       <div className="flex min-h-0 flex-1">
         <div
           className={cn(
-            "min-h-0 w-full flex-col border-zinc-800 md:flex md:w-105 md:border-r lg:w-120",
+            "min-h-0 w-full flex-col border-border md:flex md:w-105 md:border-r lg:w-120",
             mobileView === "chat" ? "flex" : "hidden"
           )}
         >
-          <ChatPanel
-            projectId={project.id}
-            initialMessages={initialMessages}
-            onOpenDocument={handleOpenDocument}
-          />
+          <ChatPanel {...chat} onOpenDocument={handleOpenDocument} />
         </div>
 
         <div
           className={cn(
-            "min-h-0 w-full flex-1 md:flex",
-            mobileView === "docs" ? "flex" : "hidden"
+            "min-h-0 w-full flex-1 flex-col md:flex",
+            mobileView === "chat" ? "hidden" : "flex"
           )}
         >
-          <DocumentPanel
-            documents={documents}
-            activeTitle={activeDocTitle}
-            onActiveTitleChange={setActiveDocTitle}
+          <WorkspaceTabBar
+            className="hidden md:flex"
+            items={RIGHT_TABS}
+            active={rightView}
+            onChange={setRightView}
           />
+
+          <div className="flex min-h-0 flex-1">
+            <div
+              className={cn(
+                "min-h-0 w-full flex-col",
+                mobileView === "documents" ? "flex" : "hidden",
+                rightView === "documents" ? "md:flex" : "md:hidden"
+              )}
+            >
+              <DocumentPanel
+                documents={documents ?? []}
+                activeTitle={activeDocTitle}
+                onActiveTitleChange={setActiveDocTitle}
+              />
+            </div>
+
+            <div
+              className={cn(
+                "min-h-0 w-full flex-col",
+                mobileView === "tracker" ? "flex" : "hidden",
+                rightView === "tracker" ? "md:flex" : "md:hidden"
+              )}
+            >
+              <TrackerPanel {...tracker} />
+            </div>
+
+            <div
+              className={cn(
+                "min-h-0 w-full flex-col",
+                mobileView === "notes" ? "flex" : "hidden",
+                rightView === "notes" ? "md:flex" : "md:hidden"
+              )}
+            >
+              <NotesPanel {...notes} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

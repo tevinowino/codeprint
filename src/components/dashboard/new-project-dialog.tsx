@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { gooeyToast } from "@/components/ui/goey-toaster";
+import { useCreateProject } from "@/lib/use-projects";
 import {
   Dialog,
   DialogContent,
@@ -20,17 +22,25 @@ export function NewProjectDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const router = useRouter();
+  const createProject = useCreateProject();
   const [title, setTitle] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!title.trim()) return;
-    // Persistence lands with the Convex phase — for now this just previews the flow.
-    toast.success(`"${title.trim()}" would be created`, {
-      description: "Notebook creation isn't wired up yet — this is a design preview.",
-    });
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle || isCreating) return;
+
+    setIsCreating(true);
+    const projectId = await createProject({ title: trimmedTitle });
+    setIsCreating(false);
+    if (!projectId) return;
+
+    gooeyToast.success(`Created "${trimmedTitle}"`);
     setTitle("");
     onOpenChange(false);
+    router.push(`/project/${projectId}`);
   }
 
   return (
@@ -50,7 +60,7 @@ export function NewProjectDialog({
             onChange={(event) => setTitle(event.target.value)}
           />
           <DialogFooter>
-            <Button type="submit" disabled={!title.trim()}>
+            <Button type="submit" disabled={!title.trim() || isCreating}>
               Create notebook
             </Button>
           </DialogFooter>
